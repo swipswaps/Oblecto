@@ -12,15 +12,16 @@ import { Episode } from '../../../models/episode';
 import IdentificationError from '../../errors/IdentificationError';
 import logger from '../../../submodules/logger';
 import guessit from '../../../submodules/guessit';
+import MediaIndexer from '../MediaIndexer';
 
 
-export default class SeriesIndexer {
+export default class SeriesIndexer extends MediaIndexer {
     /**
      *
      * @param {Oblecto} oblecto
      */
     constructor(oblecto) {
-        this.oblecto = oblecto;
+        super(oblecto);
 
         this.seriesIdentifier = new AggregateIdentifier();
         this.episodeIdentifer = new AggregateIdentifier();
@@ -76,6 +77,8 @@ export default class SeriesIndexer {
             });
 
         if (seriesCreated) {
+            this.emit('seriesIndexed', series);
+
             this.oblecto.queue.pushJob('updateSeries', series);
             this.oblecto.queue.queueJob('downloadSeriesPoster', series);
         }
@@ -84,6 +87,8 @@ export default class SeriesIndexer {
     }
 
     async indexFile(episodePath) {
+        this.emit('indexStart', episodePath);
+
         let file = await this.oblecto.fileIndexer.indexVideoFile(episodePath);
 
         const guessitIdentification = await guessit.identify(episodePath);
@@ -113,10 +118,14 @@ export default class SeriesIndexer {
 
         await episode.addFile(file);
 
-        if (episodeCreated) {
-            this.oblecto.queue.pushJob('updateEpisode', episode);
-            this.oblecto.queue.queueJob('downloadEpisodeBanner', episode);
-        }
+        this.emit('fileIndexed', file);
+
+        if (!episodeCreated) return;
+
+        this.emit('episodeIndexed', episode);
+
+        this.oblecto.queue.pushJob('updateEpisode', episode);
+        this.oblecto.queue.queueJob('downloadEpisodeBanner', episode);
     }
 
 }
