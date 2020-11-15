@@ -19,6 +19,11 @@ export default class MovieIndexer extends MediaIndexer {
         this.oblecto.queue.addJob('indexMovie', async (job) => await this.indexFile(job.path, job.doReIndex));
     }
 
+    /**
+     * Index a certain file as a movie
+     * @param {String} moviePath
+     * @returns {Promise<void>}
+     */
     async indexFile(moviePath) {
         this.emit('indexStart', moviePath);
 
