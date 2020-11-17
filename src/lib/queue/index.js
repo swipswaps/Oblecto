@@ -2,7 +2,9 @@ import async from 'async';
 import logger from '../../submodules/logger';
 
 export default class Queue {
-    constructor(concurrency) {
+    constructor(oblecto) {
+        this.oblecto = oblecto;
+
         this.jobs = {};
 
         this.queue = async.priorityQueue((job, callback) => {
@@ -25,7 +27,7 @@ export default class Queue {
 
                     callback();
                 });
-        }, concurrency);
+        }, this.oblecto.config.queue.concurrency);
     }
 
     /**

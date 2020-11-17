@@ -42,6 +42,7 @@ import FileIndexer from '../indexers/files/FileIndexer';
 
 import {initDatabase} from '../../submodules/database';
 import StreamSessionController from '../streamSessions/StreamSessionController';
+import RedisQueue from '../redisQueue';
 
 export default class Oblecto {
     constructor(config) {
@@ -52,7 +53,7 @@ export default class Oblecto {
         this.tvdb = new TVDB(this.config.tvdb.key);
         this.tmdb = new MovieDb(this.config.themoviedb.key);
 
-        this.queue = new Queue(this.config.queue.concurrency);
+        this.queue = new RedisQueue(this);
 
         this.oblectoAPI = new OblectoAPI(this);
         this.realTimeController = new RealtimeController(this);
@@ -97,6 +98,8 @@ export default class Oblecto {
 
             this.federationClientController.addAllSyncMasters();
         }
+
+        this.queue.startWorkers();
     }
 
     close() {
