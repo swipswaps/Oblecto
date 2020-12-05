@@ -1,12 +1,13 @@
 import async from 'async';
 import logger from '../../submodules/logger';
+import Oblecto from "../oblecto";
 
 export default class Queue {
-    /**
-     *
-     * @param {Oblecto} oblecto
-     */
-    constructor(oblecto) {
+    private oblecto: Oblecto;
+    private readonly jobs: {};
+    private queue: async.AsyncPriorityQueue<any>;
+    
+    constructor(oblecto: Oblecto) {
         this.oblecto = oblecto;
 
         this.jobs = {};

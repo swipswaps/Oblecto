@@ -1,3 +1,4 @@
+// @ts-ignore
 import TVDB from 'node-tvdb';
 import {MovieDb} from 'moviedb-promise';
 
@@ -44,7 +45,55 @@ import {initDatabase} from '../../submodules/database';
 import StreamSessionController from '../streamSessions/StreamSessionController';
 
 export default class Oblecto {
-    constructor(config) {
+    public config: any;
+    public database: any;
+
+    public tvdb: TVDB;
+    public tmdb: MovieDb;
+
+    public queue: Queue;
+
+    public oblectoAPI: OblectoAPI;
+    public realTimeController: RealtimeController;
+
+    public downloader: Downloader;
+    public fileIndexer: FileIndexer;
+    public seriesIndexer: SeriesIndexer;
+    public movieIndexer: MovieIndexer;
+
+    public seriesCollector: SeriesCollector;
+    public movieCollector: MovieCollector;
+
+    public seriesArtworkDownloader: SeriesArtworkDownloader;
+    public movieArtworkDownloader: MovieArtworkDownloader;
+
+    public seriesArtworkCollector: SeriesArtworkCollector;
+    public movieArtworkCollector: MovieArtworkCollector;
+
+    public artworkUtils: ArtworkUtils;
+    public imageScaler: ImageScaler;
+
+    public fileUpdater: FileUpdater;
+    public seriesUpdater: SeriesUpdater;
+    public movieUpdater: MovieUpdater;
+
+    public fileUpdateCollector: FileUpdateCollector;
+    public seriesUpdateCollector: SeriesUpdateCollector;
+    public movieUpdateCollector: MovieUpdateCollector;
+
+    public fileCleaner: FileCleaner;
+    public movieCleaner: MovieCleaner;
+    public seriesCleaner: SeriesCleaner;
+
+    public streamSessionController: StreamSessionController;
+
+    public federationController: FederationController;
+    public federationClientController: FederationClientController;
+
+    public federationEpisodeIndexer: FederationEpisodeIndexer;
+    public federationMovieIndexer: FederationMovieIndexer;
+
+    constructor(config: any) {
         this.config = config;
 
         this.database = initDatabase();
@@ -88,20 +137,21 @@ export default class Oblecto {
 
         this.streamSessionController = new StreamSessionController(this);
 
-        if (config.federation.enable) {
-            this.fedartionController = new FederationController(this);
-            this.federationClientController = new FederationClientController(this);
+        this.federationController = new FederationController(this);
+        this.federationClientController = new FederationClientController(this);
 
-            this.federationEpisodeIndexer = new FederationEpisodeIndexer(this);
-            this.federationMovieIndexer = new FederationMovieIndexer(this);
+        this.federationEpisodeIndexer = new FederationEpisodeIndexer(this);
+        this.federationMovieIndexer = new FederationMovieIndexer(this);
 
-            this.federationClientController.addAllSyncMasters();
-        }
+        this.federationClientController.addAllSyncMasters();
+
     }
 
     close() {
         for (let item of Object.keys(this)) {
+            // @ts-ignore
             if (this[item].close) {
+                // @ts-ignore
                 this[item].close();
             }
         }

@@ -28,6 +28,9 @@ module.exports = {
         'func-call-spacing': [
             'error',
             'never'
+        ],
+        'no-unused-vars': [
+            'warn',
         ]
     }
 };
