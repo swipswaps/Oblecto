@@ -12,14 +12,17 @@ import { Episode } from '../../../models/episode';
 import IdentificationError from '../../errors/IdentificationError';
 import logger from '../../../submodules/logger';
 import guessit from '../../../submodules/guessit';
+import Oblecto from '../../oblecto';
+import {File} from '../../../models/file';
 
 
 export default class SeriesIndexer {
-    /**
-     *
-     * @param {Oblecto} oblecto
-     */
-    constructor(oblecto) {
+    private oblecto: Oblecto;
+
+    private seriesIdentifier: AggregateIdentifier;
+    private episodeIdentifer: AggregateIdentifier;
+
+    constructor(oblecto: Oblecto) {
         this.oblecto = oblecto;
 
         this.seriesIdentifier = new AggregateIdentifier();
@@ -49,7 +52,7 @@ export default class SeriesIndexer {
         this.oblecto.queue.registerJob('indexEpisode', async (job) => await this.indexFile(job.path));
     }
 
-    async indexSeries(file, guessitIdentification) {
+    async indexSeries(file: File, guessitIdentification) {
         let seriesIdentification;
 
         try {
@@ -83,7 +86,7 @@ export default class SeriesIndexer {
         return series;
     }
 
-    async indexFile(episodePath) {
+    async indexFile(episodePath: string) {
         let file = await this.oblecto.fileIndexer.indexVideoFile(episodePath);
 
         const guessitIdentification = await guessit.identify(episodePath);
